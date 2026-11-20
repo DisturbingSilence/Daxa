@@ -78,12 +78,18 @@ endif()
 
 if (DAXA_ENABLE_UTILS_PIPELINE_MANAGER_SLANG AND NOT TARGET slang::slang)
     set(Slang_VERSION "2025.11")
-    FetchContent_Declare(
-        slang
-        URL https://github.com/shader-slang/slang/releases/download/v${Slang_VERSION}/slang-${Slang_VERSION}-windows-x86_64.zip
-        # URL https://github.com/shader-slang/slang/releases/download/v2025.11/slang-2025.11-windows-x86_64.zip
-        DOWNLOAD_EXTRACT_TIMESTAMP 1
-    )
+    # URL https://github.com/shader-slang/slang/releases/download/v2025.11/slang-2025.11-{windows/linux}-x86_64.zip
+    if(WIN32)
+      FetchContent_Declare(
+          slang
+          URL https://github.com/shader-slang/slang/releases/download/v${Slang_VERSION}/slang-${Slang_VERSION}-windows-x86_64.zip
+          DOWNLOAD_EXTRACT_TIMESTAMP 1)
+    elseif(LINUX)
+      FetchContent_Declare(
+          slang
+          URL https://github.com/shader-slang/slang/releases/download/v${Slang_VERSION}/slang-${Slang_VERSION}-linux-x86_64.zip
+          DOWNLOAD_EXTRACT_TIMESTAMP 1)
+    endif()
     FetchContent_MakeAvailable(slang)
 
     find_path(Slang_INCLUDE_DIR
@@ -101,7 +107,12 @@ if (DAXA_ENABLE_UTILS_PIPELINE_MANAGER_SLANG AND NOT TARGET slang::slang)
         DOC "Slang linker library"
     )
     mark_as_advanced(Slang_LIBRARY)
-
+    if(NOT Slang_INCLUDE_DIR OR NOT Slang_LIBRARY)
+        message(FATAL_ERROR "Could not find Slang headers/library")
+    endif()
+    if(NOT Slang_GLSLANG)
+        message(FATAL_ERROR "Could not find Slang glslang integration library")
+    endif()
     if(WIN32)
         find_file(Slang_DLL
             NAMES slang.dll
