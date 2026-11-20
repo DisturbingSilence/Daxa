@@ -110,9 +110,6 @@ if (DAXA_ENABLE_UTILS_PIPELINE_MANAGER_SLANG AND NOT TARGET slang::slang)
     if(NOT Slang_INCLUDE_DIR OR NOT Slang_LIBRARY)
         message(FATAL_ERROR "Could not find Slang headers/library")
     endif()
-    if(NOT Slang_GLSLANG)
-        message(FATAL_ERROR "Could not find Slang glslang integration library")
-    endif()
     if(WIN32)
         find_file(Slang_DLL
             NAMES slang.dll
